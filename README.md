@@ -1,10 +1,12 @@
-<img width="1600" height="900" alt="WhatsApp Image 2026-08-05 at 4 22 18 PM" src="https://github.com/user-attachments/assets/c0ac7aac-f454-4344-88a6-1b105632e4f6" />
-<img width="1600" height="900" alt="WhatsApp Image 2026-08-05 at 4 22 17 PM" src="https://github.com/user-attachments/assets/1892ea6e-9cf9-4dce-a9e6-3b717db66ce7" />
 
 
 
 
 # 🌱 eatGrow — Fresh, Nutritious Food Near You
+url:https://claude.ai/public/artifacts/0beea318-29fa-44a0-a4d2-a0626b1a2794
+
+<img width="1600" height="900" alt="WhatsApp Image 2026-08-05 at 4 22 18 PM" src="https://github.com/user-attachments/assets/c0ac7aac-f454-4344-88a6-1b105632e4f6" />
+<img width="1600" height="900" alt="WhatsApp Image 2026-08-05 at 4 22 17 PM" src="https://github.com/user-attachments/assets/1892ea6e-9cf9-4dce-a9e6-3b717db66ce7" />
 
 > **Eat well without guesswork.**
 
