@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eatGrow — Fresh, nutritious, near you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F1;
+    --bg-alt:#EAEEDF;
+    --card:#FFFFFF;
+    --ink:#16241C;
+    --ink-soft:#4B5A4E;
+    --line:#D9DECB;
+    --forest:#1F4D3A;
+    --forest-dark:#12291F;
+    --citrus:#E8A33D;
+    --citrus-dark:#B97D22;
+    --berry:#B3355A;
+    --radius:14px;
+    --shadow: 0 6px 20px rgba(18,41,31,0.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:-0.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  :focus-visible{ outline:3px solid var(--citrus); outline-offset:2px; }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    background:var(--forest-dark);
+    color:#fff;
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{
+    font-size:22px;
+    font-weight:700;
+    margin:0;
+  }
+  .brand span{color:var(--citrus);}
+  .topbar-tag{
+    font-size:13px;
+    color:#CBD6C7;
+    display:none;
+  }
+  @media(min-width:640px){ .topbar-tag{ display:block; } }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:
+      radial-gradient(circle at 8px 8px, rgba(232,163,61,0.18) 2px, transparent 2px) 0 0/28px 28px,
+      linear-gradient(160deg, var(--forest) 0%, var(--forest-dark) 100%);
+    padding:48px 24px 90px;
+    color:#fff;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:clamp(28px,5vw,44px);
+    margin:0 0 10px;
+    line-height:1.1;
+  }
+  .hero p{
+    max-width:560px;
+    margin:0 auto;
+    color:#D9E3D4;
+    font-size:16px;
+    line-height:1.5;
+  }
+
+  .order-slip{
+    max-width:880px;
+    margin:32px auto -70px;
+    background:var(--card);
+    border:1px dashed var(--forest);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow:var(--shadow);
+    transform:rotate(-0.6deg);
+    color:var(--ink);
+    text-align:left;
+    position:relative;
+  }
+  .order-slip::before{
+    content:"Order slip";
+    position:absolute;
+    top:-11px;
+    left:20px;
+    background:var(--citrus);
+    color:var(--forest-dark);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:3px 10px;
+    border-radius:20px;
+  }
+  .slip-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    margin-top:10px;
+  }
+  @media(min-width:760px){
+    .slip-grid{ grid-template-columns:repeat(5,1fr); align-items:end; }
+  }
+  .field label{
+    display:block;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field select{
+    width:100%;
+    padding:10px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--bg-alt);
+    color:var(--ink);
+    font-size:14px;
+    font-family:inherit;
+  }
+  .field select:disabled{ opacity:0.55; }
+  .slip-actions{
+    display:flex;
+    gap:10px;
+  }
+  .btn{
+    border:none;
+    border-radius:9px;
+    padding:11px 16px;
+    font-size:14px;
+    font-weight:600;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{ background:var(--forest); color:#fff; width:100%; }
+  .btn-primary:hover{ background:var(--forest-dark); }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:var(--bg-alt); }
+
+  /* ---------- Results ---------- */
+  .results{
+    max-width:1180px;
+    margin:0 auto;
+    padding:104px 24px 60px;
+  }
+  .results-header{ margin-bottom:22px; }
+  .results-header h2{ font-size:22px; margin:0 0 4px; }
+  .results-header p{ margin:0; color:var(--ink-soft); font-size:14px; }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    background:var(--card);
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+    color:var(--ink-soft);
+  }
+  .empty-state .emoji{ font-size:34px; display:block; margin-bottom:10px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px,1fr));
+    gap:26px 20px;
+  }
+
+  /* ---------- Tag card ---------- */
+  .tag-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 16px 16px;
+    position:relative;
+    box-shadow:var(--shadow);
+    transition:transform .15s ease, box-shadow .15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .tag-card:hover{ transform:translateY(-3px); box-shadow:0 12px 26px rgba(18,41,31,0.13); }
+  .tag-hole{
+    position:absolute;
+    top:-9px;
+    left:50%;
+    transform:translateX(-50%);
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bg);
+    border:1px solid var(--line);
+  }
+  .tag-top{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .tag-emoji{ font-size:30px; line-height:1; }
+  .tag-top h3{ margin:0; font-size:17px; }
+  .tag-type{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--ink-soft);
+  }
+  .value-badge{
+    background:var(--citrus);
+    color:var(--forest-dark);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    padding:4px 8px;
+    border-radius:20px;
+    white-space:nowrap;
+    align-self:flex-start;
+  }
+  .tag-perforation{
+    position:relative;
+    border-top:1px dashed var(--line);
+    height:0;
+  }
+  .tag-perforation::before,.tag-perforation::after{
+    content:"";
+    position:absolute;
+    top:-8px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bg);
+    border:1px solid var(--line);
+  }
+  .tag-perforation::before{ left:-25px; }
+  .tag-perforation::after{ right:-25px; }
+
+  .tag-data{ display:flex; flex-direction:column; gap:6px; }
+  .data-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .data-row strong{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--ink);
+    font-weight:600;
+    font-size:13px;
+  }
+  .price-row strong{ color:var(--forest); font-size:14px; }
+
+  .shop-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--berry);
+    text-decoration:none;
+    border-top:1px solid var(--line);
+    padding-top:10px;
+  }
+  .shop-link:hover{ text-decoration:underline; }
+
+  .alts{ font-size:12.5px; color:var(--ink-soft); line-height:1.8; }
+  .alts span.label{ font-weight:600; color:var(--ink); margin-right:2px; }
+  .alt-chip{
+    display:inline-block;
+    background:var(--bg-alt);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:2px 9px;
+    margin:2px 3px 0 0;
+    font-size:12px;
+    color:var(--forest);
+  }
+
+  .compare-check{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:11px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    cursor:pointer;
+  }
+  .compare-check input{ accent-color:var(--forest); width:15px; height:15px; cursor:pointer; }
+
+  /* ---------- Compare bar & modal ---------- */
+  .compare-bar{
+    position:fixed;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    background:var(--forest-dark);
+    color:#fff;
+    padding:12px 14px 12px 18px;
+    border-radius:40px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    z-index:40;
+  }
+  .compare-bar span{ font-size:13px; color:#D9E3D4; }
+  .compare-bar .btn-primary{ width:auto; background:var(--citrus); color:var(--forest-dark); padding:9px 16px; }
+  .compare-bar .btn-primary:hover{ background:var(--citrus-dark); color:#fff; }
+  .compare-bar .btn-primary:disabled{ opacity:0.45; cursor:not-allowed; }
+  .compare-bar .clear-compare{
+    background:none;border:none;color:#B9C7B4;font-size:12px;text-decoration:underline;
+  }
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(15,25,19,0.55);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:50;
+  }
+  .modal{
+    background:var(--card);
+    border-radius:16px;
+    max-width:640px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:26px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  }
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .modal-head h2{ margin:0; font-size:19px; }
+  .modal-close{
+    background:none; border:none; font-size:20px; color:var(--ink-soft); line-height:1;
+  }
+  table.compare-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.compare-table th{
+    text-align:left; font-family:'Space Grotesk',sans-serif; font-size:13px;
+    padding:10px 8px; border-bottom:2px solid var(--forest); color:var(--forest);
+  }
+  table.compare-table td{
+    padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:top;
+  }
+  table.compare-table td.attr{ color:var(--ink-soft); font-weight:600; width:110px; }
+  table.compare-table td.mono{ font-family:'IBM Plex Mono',monospace; }
+  .win{ color:var(--forest); font-weight:700; }
+
+  .toast{
+    position:fixed; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px);
+    background:var(--forest-dark); color:#fff; padding:10px 18px; border-radius:30px;
+    font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease;
+    z-index:45;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  footer{
+    text-align:center; padding:26px; color:var(--ink-soft); font-size:12.5px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <p class="brand">eat<span>Grow</span></p>
+  <p class="topbar-tag">Fresh produce, sorted by nutrition for your budget</p>
+</header>
+
+<section class="hero">
+  <h1>Eat well without guesswork.</h1>
+  <p>Tell us your city, area and budget — we'll show the fruits and vegetables worth buying, where to get them, and what to try instead.</p>
+
+  <form class="order-slip" id="filterForm">
+    <div class="slip-grid">
+      <div class="field">
+        <label for="citySelect">City</label>
+        <select id="citySelect">
+          <option value="">Select city</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="areaSelect">Area</label>
+        <select id="areaSelect" disabled>
+          <option value="">Select area</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="budgetSelect">Budget</label>
+        <select id="budgetSelect">
+          <option value="any">Any</option>
+          <option value="Low">Low (under ₹40/kg)</option>
+          <option value="Medium">Medium (₹40–90/kg)</option>
+          <option value="High">High (over ₹90/kg)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="proteinSelect">Protein</label>
+        <select id="proteinSelect">
+          <option value="any">Any</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="calorieSelect">Calories</label>
+        <select id="calorieSelect">
+          <option value="any">Any</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+    </div>
+    <div class="slip-grid" style="margin-top:16px; grid-template-columns:1fr auto;">
+      <button type="submit" class="btn btn-primary" id="findBtn">Find healthy food</button>
+      <button type="button" class="btn btn-ghost" id="clearBtn">Clear filters</button>
+    </div>
+  </form>
+</section>
+
+<section class="results" id="resultsSection">
+  <div class="results-header">
+    <h2 id="resultsTitle">Select a city and area to begin</h2>
+    <p id="resultsSubtitle">Results are ranked by protein-per-rupee, so the best value for your budget shows up first.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<div class="compare-bar" id="compareBar" hidden>
+  <span id="compareCount">0 selected</span>
+  <button class="btn btn-primary" id="compareBtn" disabled>Compare</button>
+  <button class="clear-compare" id="clearCompareBtn" type="button">Clear</button>
+</div>
+
+<div class="modal-overlay" id="compareModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Side by side</h2>
+      <button class="modal-close" id="closeModalBtn" aria-label="Close">✕</button>
+    </div>
+    <div id="compareContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>eatGrow — a prototype. Prices and stock are illustrative sample data, not live listings.</footer>
+
+<script>
+  /* ---------------- Data ---------------- */
+  const CITIES = {
+    "Mumbai": ["Andheri","Bandra","Powai","Dadar"],
+    "Delhi": ["Connaught Place","Saket","Rohini","Dwarka"],
+    "Bangalore": ["Indiranagar","Koramangala","Whitefield","Jayanagar"],
+    "Hyderabad": ["Banjara Hills","Gachibowli","Kukatpally","Secunderabad"],
+    "Chennai": ["Adyar","T Nagar","Anna Nagar","Velachery"],
+    "Pune": ["Kothrud","Baner","Viman Nagar","Hadapsar"]
+  };
+  const CITY_FACTOR = { Mumbai:1.15, Delhi:1.05, Bangalore:1.1, Hyderabad:0.95, Chennai:1.0, Pune:1.0 };
+  const SHOP_TEMPLATES = ["Fresh Mart","Organic Basket","Green Valley Store","Farm Fresh Corner","Daily Greens","Nature's Basket","Local Sabzi Point","Harvest Hub"];
+
+  // name, type, protein(g/100g), calories(kcal/100g), fiber(g/100g), base price(₹/kg), emoji
+  const PRODUCE = [
+    ["Banana","fruit",1.1,89,2.6,50,"🍌"],
+    ["Apple","fruit",0.3,52,2.4,180,"🍎"],
+    ["Guava","fruit",2.6,68,5.4,60,"🍐"],
+    ["Papaya","fruit",0.5,43,1.7,40,"🍑"],
+    ["Pomegranate","fruit",1.7,83,4.0,150,"🫐"],
+    ["Orange","fruit",0.9,47,2.4,80,"🍊"],
+    ["Watermelon","fruit",0.6,30,0.4,25,"🍉"],
+    ["Mango","fruit",0.8,60,1.6,100,"🥭"],
+    ["Chikoo","fruit",0.4,83,5.3,70,"🍈"],
+    ["Grapes","fruit",0.7,69,0.9,90,"🍇"],
+    ["Spinach","vegetable",2.9,23,2.2,30,"🥬"],
+    ["Broccoli","vegetable",2.8,34,2.6,90,"🥦"],
+    ["Moringa Leaves","vegetable",9.4,64,2.0,40,"🌿"],
+    ["Green Peas","vegetable",5.4,81,5.1,70,"🫛"],
+    ["Sweet Corn","vegetable",3.3,86,2.7,40,"🌽"],
+    ["Moong Sprouts","vegetable",3.0,30,1.8,80,"🌱"],
+    ["Bottle Gourd","vegetable",0.6,14,0.5,30,"🥒"],
+    ["Okra","vegetable",1.9,33,3.2,40,"🫘"],
+    ["Carrot","vegetable",0.9,41,2.8,40,"🥕"],
+    ["Beetroot","vegetable",1.6,43,2.8,35,"🍠"],
+    ["Cauliflower","vegetable",1.9,25,2.0,35,"🥦"],
+    ["Cabbage","vegetable",1.3,25,2.5,25,"🥬"],
+    ["Sweet Potato","vegetable",1.6,86,3.0,45,"🍠"],
+    ["Potato","vegetable",2.0,77,2.2,25,"🥔"],
+    ["Tomato","vegetable",0.9,18,1.2,30,"🍅"],
+    ["Cucumber","vegetable",0.7,15,0.5,25,"🥒"],
+    ["Capsicum","vegetable",1.0,20,2.1,60,"🫑"],
+    ["Garlic","vegetable",6.4,149,2.1,200,"🧄"]
+  ].map(([name,type,protein,cal,fiber,base,emoji]) => ({name,type,protein,cal,fiber,base,emoji}));
+
+  /* ---------------- Helpers ---------------- */
+  function hashStr(s){
+    let h = 0;
+    for(let i=0;i<s.length;i++){ h = (h<<5) - h + s.charCodeAt(i); h |= 0; }
+    return Math.abs(h);
+  }
+  function pseudoRand(seed){
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+  function priceTier(p){ if(p<=40) return 'Low'; if(p<=90) return 'Medium'; return 'High'; }
+  function proteinTier(p){ if(p<1) return 'Low'; if(p<=3) return 'Medium'; return 'High'; }
+  function calTier(c){ if(c<30) return 'Low'; if(c<=70) return 'Medium'; return 'High'; }
+
+  function buildListings(city, area){
+    return PRODUCE.map(item => {
+      const seed = hashStr(city+area+item.name);
+      const priceVar = 0.75 + pseudoRand(seed) * 0.6;
+      const price = Math.max(15, Math.round(item.base * CITY_FACTOR[city] * priceVar / 5) * 5);
+      const shopIdx = Math.floor(pseudoRand(seed+1) * SHOP_TEMPLATES.length);
+      const shop = area + " " + SHOP_TEMPLATES[shopIdx];
+      const score = Math.round((item.protein*10/price*100) * 10) / 10; // g protein per ₹100
+      return {
+        id: city+"|"+area+"|"+item.name,
+        name:item.name, type:item.type, protein:item.protein, cal:item.cal, fiber:item.fiber,
+        emoji:item.emoji, price, shop, city, area, score
+      };
+    });
+  }
+
+  function getAlternatives(item, pool){
+    let candidates = pool.filter(x => x.name !== item.name && x.protein >= item.protein - 0.4);
+    candidates.sort((a,b) => b.protein - a.protein);
+    let alts = candidates.slice(0,2);
+    if(alts.length < 2){
+      const chosen = new Set(alts.map(a=>a.name));
+      const rest = pool.filter(x => x.name !== item.name && !chosen.has(x.name))
+                       .sort((a,b) => b.protein - a.protein);
+      alts = alts.concat(rest.slice(0, 2-alts.length));
+    }
+    return alts;
+  }
+
+  function mapsUrl(item){
+    const q = item.shop + ", " + item.area + ", " + item.city;
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+  }
+
+  /* ---------------- State ---------------- */
+  let currentListings = [];
+  let currentPool = [];
+  let compareIds = new Set();
+
+  /* ---------------- DOM refs ---------------- */
+  const citySelect = document.getElementById('citySelect');
+  const areaSelect = document.getElementById('areaSelect');
+  const budgetSelect = document.getElementById('budgetSelect');
+  const proteinSelect = document.getElementById('proteinSelect');
+  const calorieSelect = document.getElementById('calorieSelect');
+  const filterForm = document.getElementById('filterForm');
+  const clearBtn = document.getElementById('clearBtn');
+  const grid = document.getElementById('grid');
+  const resultsTitle = document.getElementById('resultsTitle');
+  const resultsSubtitle = document.getElementById('resultsSubtitle');
+  const compareBar = document.getElementById('compareBar');
+  const compareCount = document.getElementById('compareCount');
+  const compareBtn = document.getElementById('compareBtn');
+  const clearCompareBtn = document.getElementById('clearCompareBtn');
+  const compareModal = document.getElementById('compareModal');
+  const compareContent = document.getElementById('compareContent');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const toast = document.getElementById('toast');
+
+  /* ---------------- Populate selects ---------------- */
+  Object.keys(CITIES).forEach(city => {
+    const opt = document.createElement('option');
+    opt.value = city; opt.textContent = city;
+    citySelect.appendChild(opt);
+  });
+
+  citySelect.addEventListener('change', () => {
+    const city = citySelect.value;
+    areaSelect.innerHTML = '<option value="">Select area</option>';
+    if(city){
+      CITIES[city].forEach(area => {
+        const opt = document.createElement('option');
+        opt.value = area; opt.textContent = area;
+        areaSelect.appendChild(opt);
+      });
+      areaSelect.disabled = false;
+    } else {
+      areaSelect.disabled = true;
+    }
+  });
+
+  /* ---------------- Search ---------------- */
+  filterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const city = citySelect.value;
+    const area = areaSelect.value;
+    if(!city || !area){
+      showToast('Pick a city and area first');
+      return;
+    }
+    compareIds.clear();
+    updateCompareBar();
+
+    currentPool = buildListings(city, area);
+    currentListings = currentPool.filter(item => {
+      const okBudget = budgetSelect.value === 'any' || priceTier(item.price) === budgetSelect.value;
+      const okProtein = proteinSelect.value === 'any' || proteinTier(item.protein) === proteinSelect.value;
+      const okCal = calorieSelect.value === 'any' || calTier(item.cal) === calorieSelect.value;
+      return okBudget && okProtein && okCal;
+    }).sort((a,b) => b.score - a.score);
+
+    resultsTitle.textContent = currentListings.length
+      ? currentListings.length + " picks in " + area + ", " + city
+      : "No matches in " + area + ", " + city;
+    resultsSubtitle.textContent = currentListings.length
+      ? "Ranked by protein-per-rupee, so the best value for your budget shows up first."
+      : "";
+
+    renderGrid();
+    document.getElementById('resultsSection').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  clearBtn.addEventListener('click', () => {
+    filterForm.reset();
+    areaSelect.innerHTML = '<option value="">Select area</option>';
+    areaSelect.disabled = true;
+    currentListings = [];
+    currentPool = [];
+    compareIds.clear();
+    updateCompareBar();
+    resultsTitle.textContent = "Select a city and area to begin";
+    resultsSubtitle.textContent = "Results are ranked by protein-per-rupee, so the best value for your budget shows up first.";
+    grid.innerHTML = '';
+  });
+
+  /* ---------------- Render ---------------- */
+  function renderGrid(){
+    if(currentListings.length === 0){
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">' +
+        '<span class="emoji">🌱</span>' +
+        '<p><strong>Nothing fits those filters yet.</strong><br>Try widening your budget or nutrition range.</p>' +
+        '</div>';
+      return;
+    }
+    grid.innerHTML = currentListings.map(item => cardHTML(item)).join('');
+  }
+
+  function cardHTML(item){
+    const alts = getAlternatives(item, currentPool);
+    const altsHTML = alts.map(a => '<span class="alt-chip">'+a.emoji+' '+a.name+'</span>').join('');
+    const checked = compareIds.has(item.id) ? 'checked' : '';
+    return (
+      '<article class="tag-card">' +
+        '<div class="tag-hole"></div>' +
+        '<div class="tag-top">' +
+          '<span class="tag-emoji">'+item.emoji+'</span>' +
+          '<div><h3>'+item.name+'</h3><span class="tag-type">'+item.type+'</span></div>' +
+          '<label class="compare-check">' +
+            '<input type="checkbox" data-compare-id="'+item.id+'" '+checked+'>' +
+            'Compare' +
+          '</label>' +
+        '</div>' +
+        '<div class="value-badge">'+item.score+' g protein / ₹100</div>' +
+        '<div class="tag-perforation"></div>' +
+        '<div class="tag-data">' +
+          '<div class="data-row"><span>Protein</span><strong>'+item.protein+' g</strong></div>' +
+          '<div class="data-row"><span>Calories</span><strong>'+item.cal+' kcal</strong></div>' +
+          '<div class="data-row"><span>Fiber</span><strong>'+item.fiber+' g</strong></div>' +
+          '<div class="data-row price-row"><span>Price</span><strong>₹'+item.price+'/kg</strong></div>' +
+        '</div>' +
+        '<a class="shop-link" href="'+mapsUrl(item)+'" target="_blank" rel="noopener">📍 '+item.shop+' — get directions</a>' +
+        '<div class="alts"><span class="label">Try instead:</span>'+altsHTML+'</div>' +
+      '</article>'
+    );
+  }
+
+  /* ---------------- Compare ---------------- */
+  grid.addEventListener('change', (e) => {
+    if(e.target.matches('[data-compare-id]')){
+      const id = e.target.getAttribute('data-compare-id');
+      if(e.target.checked){
+        if(compareIds.size >= 2){
+          e.target.checked = false;
+          showToast('You can compare up to 2 items at a time');
+          return;
+        }
+        compareIds.add(id);
+      } else {
+        compareIds.delete(id);
+      }
+      updateCompareBar();
+    }
+  });
+
+  function updateCompareBar(){
+    if(compareIds.size === 0){
+      compareBar.hidden = true;
+      return;
+    }
+    compareBar.hidden = false;
+    compareCount.textContent = compareIds.size + " selected";
+    compareBtn.disabled = compareIds.size !== 2;
+  }
+
+  clearCompareBtn.addEventListener('click', () => {
+    compareIds.clear();
+    updateCompareBar();
+    renderGrid();
+  });
+
+  compareBtn.addEventListener('click', () => {
+    const items = currentListings.filter(i => compareIds.has(i.id));
+    if(items.length !== 2) return;
+    compareContent.innerHTML = compareTableHTML(items[0], items[1]);
+    compareModal.hidden = false;
+  });
+
+  function compareTableHTML(a, b){
+    function row(label, va, vb, unit, higherBetter){
+      const aWin = higherBetter ? va > vb : va < vb;
+      const bWin = higherBetter ? vb > va : vb < va;
+      return '<tr>' +
+        '<td class="attr">'+label+'</td>' +
+        '<td class="mono '+(aWin?'win':'')+'">'+va+unit+'</td>' +
+        '<td class="mono '+(bWin?'win':'')+'">'+vb+unit+'</td>' +
+      '</tr>';
+    }
+    return (
+      '<table class="compare-table">' +
+        '<tr><th></th><th>'+a.emoji+' '+a.name+'</th><th>'+b.emoji+' '+b.name+'</th></tr>' +
+        row('Price', a.price, b.price, '/kg (₹)', false) +
+        row('Protein', a.protein, b.protein, ' g', true) +
+        row('Calories', a.cal, b.cal, ' kcal', false) +
+        row('Fiber', a.fiber, b.fiber, ' g', true) +
+        row('Value score', a.score, b.score, ' g/₹100', true) +
+        '<tr><td class="attr">Shop</td><td colspan="2"><a href="'+mapsUrl(a)+'" target="_blank" rel="noopener">📍 '+a.shop+'</a> &nbsp;·&nbsp; <a href="'+mapsUrl(b)+'" target="_blank" rel="noopener">📍 '+b.shop+'</a></td></tr>' +
+      '</table>'
+    );
+  }
+
+  closeModalBtn.addEventListener('click', () => { compareModal.hidden = true; });
+  compareModal.addEventListener('click', (e) => { if(e.target === compareModal) compareModal.hidden = true; });
+
+  /* ---------------- Toast ---------------- */
+  let toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>
